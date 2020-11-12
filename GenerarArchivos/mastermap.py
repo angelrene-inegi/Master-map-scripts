@@ -69,7 +69,7 @@ def generaImagen (formato,nomimg):
    pipe.set(renderer.clone())  
    opts = ["COMPRESS=ZLEVEL","RASTER_TABLE="+nomimg] 
    if (formato == "GEOPACKAGE"): 
-      projectGpkg = os.path.join(rutaPeticion,idPeticion +".gpkg")  
+      projectGpkg = os.path.join(rutaPeticion,nombre +".gpkg")  
       ds = ogr.Open(projectGpkg, True)
       source = wmsLayer
       if source.isValid():
@@ -242,7 +242,7 @@ def empaqueta (capa,nomcapa):
     options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer #Update mode
     options.EditionCapability = QgsVectorFileWriter.CanAddNewLayer 
     options.layerName = nomcapa 
-    rutaGpkg = os.path.join(rutaPeticion,idPeticion+".gpkg")
+    rutaGpkg = os.path.join(rutaPeticion,nombre+".gpkg")
     _writer = QgsVectorFileWriter.writeAsVectorFormat(capa, rutaGpkg, options)
     if _writer[0] == QgsVectorFileWriter.ErrCreateDataSource :                                     
        options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteFile #Create mode
@@ -288,6 +288,7 @@ def generaGpkg(nomcap,capas,srid,tipo,formato):
          result = processing.run ('native:clip', {'INPUT':  vlayer ,'OVERLAY': layercut,'OUTPUT': 'memory:'})['OUTPUT']
          if (formato == "SHAPE"):
              posicion = 0
+             camposnopermitidos = []
              for field in result.fields(): 
                  #print (QgsField(field).name() + "---" + QgsField(field).typeName())
                  if (str (QgsField(field).typeName()).upper() == "BINARY"):
