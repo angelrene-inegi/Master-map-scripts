@@ -250,7 +250,9 @@ def empaqueta (capa,nomcapa):
     _writer = QgsVectorFileWriter.writeAsVectorFormat(capa, rutaGpkg, options)
     if _writer[0] == QgsVectorFileWriter.ErrCreateDataSource :                                     
        options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteFile #Create mode
-       _writer= QgsVectorFileWriter.writeAsVectorFormat(capa, rutaGpkg, options)   
+       _writer= QgsVectorFileWriter.writeAsVectorFormat(capa, rutaGpkg, options)  
+
+    copiarEstiloGPKG(rutaGpkg,nomcapa)
     pass   
     
 def generArchivosalida (layer,srid,nomcapa,formato): 
@@ -269,6 +271,15 @@ def generArchivosalida (layer,srid,nomcapa,formato):
 #    if error[0] == QgsVectorFileWriter.NoError:
 #          print("success again!")    
     pass
+    
+def copiarEstiloGPKG(rutaGpkg,nomcapa):
+    gpkg = rutaGpkg + "|layername="+nomcapa
+    layer = QgsVectorLayer(gpkg, "TEMPORAL", "ogr")
+    rutaEstilo = os.path.join(rutaEstilos,nomcapa+".qml") # Ruta del archivo de estilo de la capa 
+    layer.loadNamedStyle(rutaEstilo) # Cargamos el estilo del archivo qml
+    layer.triggerRepaint() # Aplicamos el estilo del qml
+    layer.saveStyleToDatabase("new_style","estilo_defecto",True,"") # Guardamos el estilo en el GPKG por defecto
+    
     
 def copiarArchivoEstilo(nomcapa):
     rutaArchivoEstilo = os.path.join(rutaEstilos,nomcapa+".qml")
