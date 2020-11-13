@@ -143,16 +143,12 @@ layout.setName("MAPA_MASTER")
 
 ##########################################################################
 manager.addLayout(layout)
-layout = manager.layoutByName('MAPA_MASTER')#modelo de composicion
-map = QgsLayoutItemMap(layout)
-map.setRect (20, 20, 20, 20)
-#############################COORDENADAS DEL MAPA##################################
-map.setExtent(extentRecorte)
-layout.addLayoutItem(map)
-
-###############################################################
-map.attemptMove(QgsLayoutPoint(20, 30, QgsUnitTypes.LayoutMillimeters))
-map.attemptResize(QgsLayoutSize(240,165,QgsUnitTypes.LayoutMillimeters))
+layout = manager.layoutByName('MAPA_MASTER')# modelo de composicion
+map = layout.itemById("map") # Obtenemos el mapa en la composicion 
+#map = QgsLayoutItemMap(layout)
+#map.setRect (20, 20, 20, 20)
+#map.attemptMove(QgsLayoutPoint(20, 30, QgsUnitTypes.LayoutMillimeters))
+#map.attemptResize(QgsLayoutSize(240,165,QgsUnitTypes.LayoutMillimeters))
 #map.setMapRotation(angulo)
 ########################################CUADRICULA##############################
 intervalo = perimetroGeom / 44.73 # 44.73 m por cada metro de la area para que la malla se vea bien en cualquier escala.
@@ -177,6 +173,15 @@ map.grid().setStyle(QgsLayoutItemMapGrid.Solid)
 map.grid().setFrameWidth(1.0)
 map.grid().setFrameStyle(QgsLayoutItemMapGrid.Zebra)
 map.grid().setFramePenSize(0.5)
+
+#############################COORDENADAS DEL MAPA##################################
+map.setExtent(extentRecorte)
+layout.addLayoutItem(map)
+
+####### AJUSTAR LA EXTENSION DEL MAPA A LA COMPOSICION 
+pages = layout.pageCollection()
+pages.resizeToContents(QgsMargins(0,0,0,0),QgsUnitTypes.LayoutMillimeters)
+
 
 titulos()
 

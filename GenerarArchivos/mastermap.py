@@ -5,10 +5,8 @@ from PyQt5.QtCore import QVariant
 import psycopg2
 from osgeo import ogr 
 import os
+from shutil import copyfile
     
-app = QgsApplication.setPrefixPath("C:/Program Files/QGIS 3.10/bin", True)
-app = QgsApplication([], False)
-app.initQgis()
 #########################################################################
 # Cargar libreria processing
 from qgis.analysis import QgsNativeAlgorithms
@@ -52,6 +50,12 @@ ext = None
 url = None
 rutaTemporales  = "D:/Z_PRUEBAS_MASTER_MAP/Temporales/"
 rutaPeticion    = os.path.join(rutaTemporales,idPeticion)
+rutaQGIS        = "C:/Program Files/QGIS 3.10/bin"
+rutaEstilos     = "C:/Users/angel.calzada/Desktop/MasterMapScripts/GenerarArchivos/estilos"
+
+app = QgsApplication.setPrefixPath(rutaQGIS, True)
+app = QgsApplication([], False)
+app.initQgis()
 
 def generaImagen (formato,nomimg):
    global url    
@@ -259,10 +263,22 @@ def generArchivosalida (layer,srid,nomcapa,formato):
     if (formato == "GEOJSON"):
         error = QgsVectorFileWriter.writeAsVectorFormat (layer,rutaArchivo+".geojson", "UTF-8",epsg,driverName="GEOJSON")              
     if (formato == "SHAPE"):
-        error = QgsVectorFileWriter.writeAsVectorFormat (layer,rutaArchivo+".shp", "UTF-8",epsg,driverName="ESRI Shapefile")              
+        error = QgsVectorFileWriter.writeAsVectorFormat (layer,rutaArchivo+".shp", "UTF-8",epsg,driverName="ESRI Shapefile")  
+
+    copiarArchivoEstilo(nomcapa)
 #    if error[0] == QgsVectorFileWriter.NoError:
 #          print("success again!")    
     pass
+    
+def copiarArchivoEstilo(nomcapa):
+    rutaArchivoEstilo = os.path.join(rutaEstilos,nomcapa+".qml")
+    rutaEstiloNuevo = os.path.join(rutaPeticion,nomcapa+".qml")
+    try:
+        copyfile(rutaArchivoEstilo, rutaEstiloNuevo)
+    except IOError as e:
+       print("Error no se pudo copiar el archivo de estilos")
+       print(e)
+    
     
 def elminaatributo (vector,pos):
     vector.dataProvider().deleteAttributes([pos])
